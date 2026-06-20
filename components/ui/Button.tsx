@@ -8,21 +8,30 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = "primary", size = "md", loading, disabled, children, ...props }, ref) => {
+  (
+    {
+      className,
+      variant = "primary",
+      size = "md",
+      loading,
+      disabled,
+      children,
+      ...props
+    },
+    ref,
+  ) => {
     const base =
       "inline-flex items-center justify-center gap-2 font-medium rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent";
 
     const variants = {
       primary:
         "bg-accent text-white hover:bg-orange-600 active:scale-[0.98] shadow-orange",
-      secondary:
-        "bg-bg-elevated text-text-primary hover:bg-border active:scale-[0.98]",
+      secondary: "bg-muted text-foreground hover:bg-border active:scale-[0.98]",
       outline:
-        "border border-border text-text-primary hover:bg-bg-elevated active:scale-[0.98]",
+        "border border-border text-foreground hover:bg-muted active:scale-[0.98]",
       ghost:
-        "text-text-secondary hover:text-text-primary hover:bg-bg-elevated active:scale-[0.98]",
-      danger:
-        "bg-danger text-white hover:bg-red-700 active:scale-[0.98]",
+        "text-muted-foreground hover:text-foreground hover:bg-muted active:scale-[0.98]",
+      danger: "bg-danger text-white hover:bg-red-700 active:scale-[0.98]",
     };
 
     const sizes = {
@@ -63,6 +72,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {children}
       </button>
     );
-  }
+  },
 );
 Button.displayName = "Button";

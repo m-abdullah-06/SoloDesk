@@ -7,12 +7,17 @@ interface ProgressBarProps {
   size?: "sm" | "md";
 }
 
-export function ProgressBar({ value, className, showLabel, size = "md" }: ProgressBarProps) {
+export function ProgressBar({
+  value,
+  className,
+  showLabel,
+  size = "md",
+}: ProgressBarProps) {
   const clamped = Math.min(100, Math.max(0, value));
   return (
     <div className={cn("w-full", className)}>
       {showLabel && (
-        <div className="flex justify-between text-xs text-text-muted mb-1">
+        <div className="flex justify-between text-xs text-muted-foreground mb-1">
           <span>Progress</span>
           <span className="font-medium text-accent">{clamped}%</span>
         </div>
@@ -20,7 +25,7 @@ export function ProgressBar({ value, className, showLabel, size = "md" }: Progre
       <div
         className={cn(
           "w-full bg-bg-elevated rounded-full overflow-hidden",
-          size === "sm" ? "h-1.5" : "h-2"
+          size === "sm" ? "h-1.5" : "h-2",
         )}
       >
         <div

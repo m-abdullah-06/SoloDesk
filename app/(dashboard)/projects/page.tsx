@@ -68,7 +68,7 @@ export default function ProjectsPage() {
             className={`flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
               filter === f.value
                 ? "bg-accent text-white"
-                : "bg-white border border-border text-text-secondary hover:bg-bg-elevated"
+                : "bg-card border border-border text-muted-foreground hover:bg-muted hover:text-foreground"
             }`}
           >
             {f.label}
@@ -136,3 +136,4 @@ export default function ProjectsPage() {
     </div>
   );
 }
+

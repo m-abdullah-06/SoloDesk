@@ -35,50 +35,82 @@ export default function ProposalDetailPage() {
   }
 
   function copyLink() {
-    navigator.clipboard.writeText(`${window.location.origin}/proposal/${proposal.portal_token}`);
+    navigator.clipboard.writeText(
+      `${window.location.origin}/proposal/${proposal.portal_token}`,
+    );
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }
 
   if (loading) return <div className="h-64 rounded-2xl shimmer" />;
-  if (!proposal) return <div className="text-center py-16 text-text-muted">Proposal not found.</div>;
+  if (!proposal)
+    return (
+      <div className="text-center py-16 text-muted-foreground">
+        Proposal not found.
+      </div>
+    );
 
-  const currSymbol = proposal.currency === "PKR" ? "Rs" : proposal.currency === "USD" ? "$" : "£";
+  const currSymbol =
+    proposal.currency === "PKR"
+      ? "Rs"
+      : proposal.currency === "USD"
+        ? "$"
+        : "£";
 
   return (
     <div className="space-y-5">
-      <button onClick={() => router.back()} className="flex items-center gap-2 text-sm text-text-muted hover:text-text-primary">
+      <button
+        onClick={() => router.back()}
+        className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+      >
         <ArrowLeft size={16} /> Proposals
       </button>
 
       <Card glow>
         <div className="flex items-start justify-between mb-4">
           <div>
-            <h1 className="font-display text-xl font-bold text-text-primary">{proposal.title}</h1>
-            <p className="text-sm text-text-muted mt-0.5">{proposal.client?.name}</p>
+            <h1 className="font-display text-xl font-bold text-foreground">
+              {proposal.title}
+            </h1>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              {proposal.client?.name}
+            </p>
           </div>
           <Badge label={proposal.status} status={proposal.status} />
         </div>
 
         {proposal.overview && (
           <div className="mb-4 p-3.5 bg-bg-elevated rounded-xl">
-            <p className="text-sm text-text-secondary leading-relaxed">{proposal.overview}</p>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              {proposal.overview}
+            </p>
           </div>
         )}
 
         {/* Scope */}
         {proposal.scope_items?.length > 0 && (
           <div className="mb-5">
-            <h3 className="font-semibold text-text-primary text-sm mb-2">Scope of Work</h3>
+            <h3 className="font-semibold text-foreground text-sm mb-2">
+              Scope of Work
+            </h3>
             <div className="space-y-2">
               {proposal.scope_items.map((item: any, i: number) => (
-                <div key={i} className="flex gap-3 p-3 bg-white border border-border rounded-xl">
-                  <div className="w-5 h-5 rounded-full bg-accent-light flex items-center justify-center flex-shrink-0 mt-0.5">
+                <div
+                  key={i}
+                  className="flex gap-3 p-3 bg-card dark:bg-muted border border-border rounded-xl"
+                >
+                  <div className="w-5 h-5 rounded-full bg-accent/10 flex items-center justify-center flex-shrink-0 mt-0.5">
                     <Check size={11} className="text-accent" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-text-primary">{item.title}</p>
-                    {item.description && <p className="text-xs text-text-muted mt-0.5">{item.description}</p>}
+                    <p className="text-sm font-medium text-foreground">
+                      {item.title}
+                    </p>
+                    {item.description && (
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {item.description}
+                      </p>
+                    )}
                   </div>
                 </div>
               ))}
@@ -89,12 +121,19 @@ export default function ProposalDetailPage() {
         {/* Timeline */}
         {proposal.timeline_items?.length > 0 && (
           <div className="mb-5">
-            <h3 className="font-semibold text-text-primary text-sm mb-2">Timeline</h3>
+            <h3 className="font-semibold text-foreground text-sm mb-2">
+              Timeline
+            </h3>
             <div className="space-y-1.5">
               {proposal.timeline_items.map((item: any, i: number) => (
-                <div key={i} className="flex items-center justify-between p-3 bg-white border border-border rounded-xl text-sm">
-                  <span className="text-text-primary">{item.milestone}</span>
-                  <span className="text-text-muted text-xs">{item.duration}</span>
+                <div
+                  key={i}
+                  className="flex items-center justify-between p-3 bg-card dark:bg-muted border border-border rounded-xl text-sm"
+                >
+                  <span className="text-foreground">{item.milestone}</span>
+                  <span className="text-muted-foreground text-xs">
+                    {item.duration}
+                  </span>
                 </div>
               ))}
             </div>
@@ -104,31 +143,48 @@ export default function ProposalDetailPage() {
         {/* Pricing */}
         {proposal.pricing_items?.length > 0 && (
           <div className="mb-5">
-            <h3 className="font-semibold text-text-primary text-sm mb-2">Investment</h3>
+            <h3 className="font-semibold text-foreground text-sm mb-2">
+              Investment
+            </h3>
             <div className="border border-border rounded-xl overflow-hidden">
               {proposal.pricing_items.map((item: any, i: number) => (
-                <div key={i} className={`flex items-center justify-between p-3 text-sm ${i > 0 ? "border-t border-border" : ""}`}>
-                  <span className="text-text-secondary">{item.description}</span>
-                  <span className="font-medium text-text-primary">{currSymbol} {parseFloat(item.amount).toLocaleString()}</span>
+                <div
+                  key={i}
+                  className={`flex items-center justify-between p-3 text-sm ${i > 0 ? "border-t border-border" : ""}`}
+                >
+                  <span className="text-muted-foreground">
+                    {item.description}
+                  </span>
+                  <span className="font-medium text-foreground">
+                    {currSymbol} {parseFloat(item.amount).toLocaleString()}
+                  </span>
                 </div>
               ))}
-              <div className="flex items-center justify-between p-3 border-t border-border bg-bg-elevated">
-                <span className="font-semibold text-text-primary">Total</span>
-                <span className="font-bold text-accent text-base">{currSymbol} {proposal.total_amount.toLocaleString()}</span>
+              <div className="flex items-center justify-between p-3 border-t border-border bg-muted">
+                <span className="font-semibold text-foreground">Total</span>
+                <span className="font-bold text-accent text-base">
+                  {currSymbol} {proposal.total_amount.toLocaleString()}
+                </span>
               </div>
             </div>
           </div>
         )}
 
         {proposal.terms && (
-          <div className="mb-4 p-3.5 bg-bg-elevated rounded-xl">
-            <p className="text-xs font-medium text-text-muted mb-1">Terms & Conditions</p>
-            <p className="text-xs text-text-secondary leading-relaxed">{proposal.terms}</p>
+          <div className="mb-4 p-3.5 bg-muted rounded-xl">
+            <p className="text-xs font-medium text-muted-foreground mb-1">
+              Terms & Conditions
+            </p>
+            <p className="text-xs text-text-secondary leading-relaxed">
+              {proposal.terms}
+            </p>
           </div>
         )}
 
         {proposal.valid_until && (
-          <p className="text-xs text-text-muted">Valid until {formatDate(proposal.valid_until)}</p>
+          <p className="text-xs text-text-muted">
+            Valid until {formatDate(proposal.valid_until)}
+          </p>
         )}
       </Card>
 
@@ -140,13 +196,25 @@ export default function ProposalDetailPage() {
         )}
         {proposal.status === "sent" && (
           <>
-            <Button onClick={() => updateStatus("accepted")} className="flex-1">Mark Accepted</Button>
-            <Button variant="outline" onClick={() => updateStatus("declined")} className="flex-1">Mark Declined</Button>
+            <Button onClick={() => updateStatus("accepted")} className="flex-1">
+              Mark Accepted
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => updateStatus("declined")}
+              className="flex-1"
+            >
+              Mark Declined
+            </Button>
           </>
         )}
         {proposal.status !== "draft" && (
           <Button variant="outline" onClick={copyLink} className="flex-1">
-            {copied ? <Check size={14} className="text-success" /> : <Copy size={14} />}
+            {copied ? (
+              <Check size={14} className="text-success" />
+            ) : (
+              <Copy size={14} />
+            )}
             {copied ? "Copied!" : "Copy Client Link"}
           </Button>
         )}

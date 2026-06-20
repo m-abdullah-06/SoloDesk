@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useTheme } from "next-themes";
 import {
   ArrowRight,
   Sparkles,
@@ -44,10 +45,14 @@ const item: Variants = {
 };
 
 export default function LandingPage() {
-  const [isDark, setIsDark] = useState(false);
+  const { resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
-  // Note: We are NOT modifying document.documentElement here to prevent theme leakage to other pages.
-  // Instead, we use the .dark class on the local wrapper div.
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isDark = mounted && resolvedTheme === "dark";
 
   return (
     <div
@@ -96,7 +101,7 @@ export default function LandingPage() {
 
             {/* Scoped Theme Toggle */}
             <button
-              onClick={() => setIsDark(!isDark)}
+              onClick={() => setTheme(isDark ? "light" : "dark")}
               className={`w-12 h-12 rounded-2xl glass flex items-center justify-center hover:scale-110 active:scale-95 transition-all text-primary border ${isDark ? "border-primary/30 shadow-[0_0_15px_rgba(245,121,10,0.2)]" : "border-primary/20 shadow-lg"}`}
             >
               <AnimatePresence mode="wait">
@@ -482,3 +487,4 @@ export default function LandingPage() {
     </div>
   );
 }
+

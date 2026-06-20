@@ -132,7 +132,7 @@ export default function InvoicesPage() {
                 )}
                 {inv.status !== "draft" && (
                   <Button size="sm" variant="ghost" onClick={() => copyLink((inv as any).portal_token, inv.id)}>
-                    {copiedId === inv.id ? <Check size={13} className="text-success" /> : <Copy size={13} />}
+                    {copiedId === inv.id ? <Check size={13} className="text-green-600 dark:text-green-500" /> : <Copy size={13} />}
                     {copiedId === inv.id ? "Copied!" : "Share Link"}
                   </Button>
                 )}
@@ -156,3 +156,4 @@ export default function InvoicesPage() {
     </div>
   );
 }
+

@@ -11,8 +11,8 @@ export function Badge({ label, status, className }: BadgeProps) {
     <span
       className={cn(
         "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize",
-        status ? getStatusColor(status) : "bg-bg-elevated text-text-secondary",
-        className
+        status ? getStatusColor(status) : "bg-muted text-muted-foreground",
+        className,
       )}
     >
       {label.replace(/_/g, " ")}
@@ -31,7 +31,7 @@ export function Tag({ label, onRemove, className }: TagProps) {
     <span
       className={cn(
         "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-accent-muted text-accent",
-        className
+        className,
       )}
     >
       {label}

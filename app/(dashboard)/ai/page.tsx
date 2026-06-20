@@ -147,8 +147,8 @@ export default function AIPage() {
               onClick={() => setScenario(s.value)}
               className={`px-3 py-1.5 rounded-xl text-xs font-medium border transition-all ${
                 scenario === s.value
-                  ? "bg-accent text-white border-accent shadow-orange"
-                  : "bg-white border-border text-text-secondary hover:border-accent/50 hover:text-accent"
+                  ? "bg-accent text-white border-accent shadow-lg shadow-orange-500/20"
+                  : "bg-card border-border text-muted-foreground hover:border-accent/50 hover:text-accent hover:text-foreground"
               }`}
             >
               {s.label}
@@ -199,7 +199,7 @@ export default function AIPage() {
         rows={4}
       />
 
-      {error && <p className="text-sm text-danger">{error}</p>}
+      {error && <p className="text-sm text-destructive">{error}</p>}
 
       <Button onClick={generate} loading={loading} size="lg" className="w-full">
         <Sparkles size={18} />
@@ -216,7 +216,7 @@ export default function AIPage() {
                 <RefreshCw size={14} /> Regenerate
               </Button>
               <Button variant="outline" size="sm" onClick={copyResult}>
-                {copied ? <Check size={14} className="text-success" /> : <Copy size={14} />}
+                {copied ? <Check size={14} className="text-green-600 dark:text-green-500" /> : <Copy size={14} />}
                 {copied ? "Copied!" : "Copy"}
               </Button>
             </div>
@@ -288,3 +288,4 @@ export default function AIPage() {
     </div>
   );
 }
+

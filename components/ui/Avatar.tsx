@@ -29,9 +29,9 @@ export function Avatar({ name, src, size = "md", className }: AvatarProps) {
   return (
     <div
       className={cn(
-        "rounded-full bg-accent-light border border-accent/20 flex items-center justify-center font-semibold text-accent flex-shrink-0",
+        "rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center font-semibold text-accent flex-shrink-0",
         sizes[size],
-        className
+        className,
       )}
     >
       {getInitials(name)}

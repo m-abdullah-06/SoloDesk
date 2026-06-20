@@ -106,7 +106,7 @@ export function ClientForm({ client, onSuccess, onCancel }: ClientFormProps) {
         onChange={(e) => setForm({ ...form, country: e.target.value })}
       />
       <div>
-        <p className="text-sm font-medium text-text-primary mb-2">Tags</p>
+        <p className="text-sm font-medium text-foreground mb-2">Tags</p>
         <div className="flex gap-2 flex-wrap">
           {TAG_OPTIONS.map((tag) => (
             <button
@@ -115,7 +115,7 @@ export function ClientForm({ client, onSuccess, onCancel }: ClientFormProps) {
               className={`px-3 py-1 rounded-full text-xs font-medium border transition-all capitalize ${
                 tags.includes(tag)
                   ? "bg-accent text-white border-accent"
-                  : "bg-white text-text-secondary border-border hover:border-accent"
+                  : "bg-background text-muted-foreground border-border hover:border-accent"
               }`}
             >
               {tag}
@@ -130,7 +130,7 @@ export function ClientForm({ client, onSuccess, onCancel }: ClientFormProps) {
         onChange={(e) => setForm({ ...form, notes: e.target.value })}
         rows={3}
       />
-      {error && <p className="text-sm text-danger">{error}</p>}
+      {error && <p className="text-sm text-destructive">{error}</p>}
       <div className="flex gap-3 pt-2">
         <Button variant="outline" onClick={onCancel} className="flex-1">Cancel</Button>
         <Button onClick={handleSubmit} loading={loading} className="flex-1">

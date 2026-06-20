@@ -32,8 +32,12 @@ interface ProjectFormProps {
   onCancel: () => void;
 }
 
-export function ProjectForm({ project, onSuccess, onCancel }: ProjectFormProps) {
-  const [clients, setClients] = useState<Pick<Client, 'id' | 'name'>[]>([]);
+export function ProjectForm({
+  project,
+  onSuccess,
+  onCancel,
+}: ProjectFormProps) {
+  const [clients, setClients] = useState<Pick<Client, "id" | "name">[]>([]);
   const [form, setForm] = useState({
     name: project?.name || "",
     description: project?.description || "",
@@ -52,19 +56,30 @@ export function ProjectForm({ project, onSuccess, onCancel }: ProjectFormProps) 
 
   useEffect(() => {
     async function loadClients() {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
-      const { data } = await supabase.from("clients").select("id, name").eq("user_id", user.id).order("name");
+      const { data } = await supabase
+        .from("clients")
+        .select("id, name")
+        .eq("user_id", user.id)
+        .order("name");
       setClients(data || []);
     }
     loadClients();
   }, []);
 
   async function handleSubmit() {
-    if (!form.name.trim()) { setError("Project name is required"); return; }
+    if (!form.name.trim()) {
+      setError("Project name is required");
+      return;
+    }
     setLoading(true);
     setError("");
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) return;
 
     const payload = {
@@ -77,11 +92,22 @@ export function ProjectForm({ project, onSuccess, onCancel }: ProjectFormProps) 
     };
 
     if (project) {
-      const { error: err } = await supabase.from("projects").update(payload).eq("id", project.id);
-      if (err) { setError(err.message); setLoading(false); return; }
+      const { error: err } = await supabase
+        .from("projects")
+        .update(payload)
+        .eq("id", project.id);
+      if (err) {
+        setError(err.message);
+        setLoading(false);
+        return;
+      }
     } else {
       const { error: err } = await supabase.from("projects").insert(payload);
-      if (err) { setError(err.message); setLoading(false); return; }
+      if (err) {
+        setError(err.message);
+        setLoading(false);
+        return;
+      }
     }
     onSuccess();
   }
@@ -111,7 +137,9 @@ export function ProjectForm({ project, onSuccess, onCancel }: ProjectFormProps) 
         <Select
           label="Payment"
           value={form.payment_status}
-          onChange={(v) => setForm({ ...form, payment_status: v as Project["payment_status"] })}
+          onChange={(v) =>
+            setForm({ ...form, payment_status: v as Project["payment_status"] })
+          }
           options={PAYMENT_OPTIONS}
         />
       </div>
@@ -126,7 +154,9 @@ export function ProjectForm({ project, onSuccess, onCancel }: ProjectFormProps) 
         <Select
           label="Currency"
           value={form.currency}
-          onChange={(v) => setForm({ ...form, currency: v as Project["currency"] })}
+          onChange={(v) =>
+            setForm({ ...form, currency: v as Project["currency"] })
+          }
           options={CURRENCY_OPTIONS}
         />
       </div>
@@ -158,9 +188,11 @@ export function ProjectForm({ project, onSuccess, onCancel }: ProjectFormProps) 
         onChange={(e) => setForm({ ...form, internal_notes: e.target.value })}
         rows={2}
       />
-      {error && <p className="text-sm text-danger">{error}</p>}
+      {error && <p className="text-sm text-destructive">{error}</p>}
       <div className="flex gap-3 pt-2">
-        <Button variant="outline" onClick={onCancel} className="flex-1">Cancel</Button>
+        <Button variant="outline" onClick={onCancel} className="flex-1">
+          Cancel
+        </Button>
         <Button onClick={handleSubmit} loading={loading} className="flex-1">
           {project ? "Save Changes" : "Create Project"}
         </Button>

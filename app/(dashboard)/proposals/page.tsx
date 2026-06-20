@@ -91,7 +91,7 @@ export default function ProposalsPage() {
               <div className="flex gap-2">
                 {p.status !== "draft" && (
                   <Button size="sm" variant="ghost" onClick={() => copyLink(p.portal_token, p.id)}>
-                    {copiedId === p.id ? <Check size={13} className="text-success" /> : <Copy size={13} />}
+                    {copiedId === p.id ? <Check size={13} className="text-green-600 dark:text-green-500" /> : <Copy size={13} />}
                     {copiedId === p.id ? "Copied!" : "Share"}
                   </Button>
                 )}
@@ -115,3 +115,4 @@ export default function ProposalsPage() {
     </div>
   );
 }
+
