@@ -1,33 +1,49 @@
-# SoloDesk — The Freelancer OS
+# 🍊 SoloDesk — The Freelancer OS
 
-> Built for AI Seekho 2026 — App Banao Category
+> A high-performance, beautiful, and AI-powered command center designed for the modern freelancer. Manage clients, track milestones, generate proposals, issue invoices, and communicate professionally—all in one place.
 
----
-
-## Stack
-
-- **Frontend:** Next.js 14, Tailwind CSS
-- **AI:** Groq (llama-3.3-70b-versatile)
-- **Auth + DB:** Supabase
-- **Deployment:** Google Cloud Run
+*Built for AI Seekho 2026 — App Banao Category*
 
 ---
 
-## Setup
+## ✨ Features
 
-### 1. Clone & Install
+- 💼 **Client CRM:** Organize and manage client relationships, contact info, and active metrics.
+- 🏁 **Project Pipeline:** Track project progress and status alongside interactive milestone systems.
+- 🌐 **Client Portals:** Share secure, password-less, real-time client links to let them view milestones, download proposals, and check invoices.
+- 🧠 **AI Communicator:** Generate polished client messages across 10 scenarios (payment follow-ups, scope creep, project handoffs) in Urdu or English, powered by **Groq**.
+- 🧾 **Invoice Builder:** Generate, track, and manage invoices with client-facing states.
+- 📄 **Proposal Builder:** Build and send professional proposals with detailed estimates.
+- 📊 **Unified Dashboard:** High-level metrics for active projects, clients, invoices, and message histories.
+- 🌓 **Premium Dark Mode:** Harmonic HSL color architecture that transitions smoothly across all screens.
+- 📱 **Mobile First:** Responsive navigation drawer and bottom nav overlays optimized for speed on phones.
+
+---
+
+## 🛠️ Stack
+
+- **Frontend:** Next.js 14, Tailwind CSS, Framer Motion
+- **Database + Auth:** Supabase
+- **Artificial Intelligence:** Groq SDK (Llama 3.3 70B)
+- **Deployment:** Vercel
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone & Install Dependencies
 
 ```bash
-git clone <repo>
+git clone https://github.com/m-abdullah-06/SoloDesk.git
 cd solodesk
 npm install
 ```
 
-### 2. Environment Variables
+### 2. Environment Setup
 
-Copy `.env.local.example` to `.env.local` and fill in:
+Create a `.env.local` file in the root directory and configure the following credentials:
 
-```
+```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
@@ -35,65 +51,26 @@ GROQ_API_KEY=your_groq_api_key
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
-### 3. Database Setup
+### 3. Database Schema setup
 
-1. Create a Supabase project at supabase.com
-2. Go to SQL Editor
-3. Run the entire contents of `supabase/schema.sql`
+1. Create a new project in [Supabase](https://supabase.com).
+2. Open the **SQL Editor** in your Supabase dashboard.
+3. Copy and run the entire contents of the schema script located in: [supabase/schema.sql](file:///f:/AISeekho/solodesk/supabase/schema.sql)
 
-### 4. Get Groq API Key
-
-1. Go to console.groq.com
-2. Create API key
-3. Add to `.env.local`
-
-### 5. Run Locally
+### 4. Run Locally
 
 ```bash
 npm run dev
 ```
+Open [http://localhost:3000](http://localhost:3000) to view your local instance.
 
 ---
 
-## Deploy to Google Cloud Run
+## ☁️ Deployment (Vercel)
 
-### Prerequisites
+SoloDesk is pre-configured for a zero-setup deployment on Vercel:
 
-```bash
-# Install Google Cloud CLI
-gcloud auth login
-gcloud config set project YOUR_PROJECT_ID
-gcloud services enable run.googleapis.com
-```
-
-### Build & Deploy
-
-```bash
-# Build Docker image
-gcloud builds submit --tag gcr.io/YOUR_PROJECT_ID/solodesk
-
-# Deploy to Cloud Run
-gcloud run deploy solodesk \
-  --image gcr.io/YOUR_PROJECT_ID/solodesk \
-  --platform managed \
-  --region asia-south1 \
-  --allow-unauthenticated \
-  --set-env-vars NEXT_PUBLIC_SUPABASE_URL=xxx \
-  --set-env-vars NEXT_PUBLIC_SUPABASE_ANON_KEY=xxx \
-  --set-env-vars GROQ_API_KEY=xxx \
-  --set-env-vars NEXT_PUBLIC_APP_URL=https://YOUR_CLOUD_RUN_URL
-```
-
----
-
-## Features
-
-- ✅ Client CRM
-- ✅ Project Pipeline with Milestones
-- ✅ **Client Portal** (no-login shareable link)
-- ✅ AI Client Communicator (10 scenarios, Groq)
-- ✅ Invoice Builder + Tracking
-- ✅ Proposal Builder (AI-powered)
-- ✅ Dashboard with stats
-- ✅ Mobile-first responsive design
-- ✅ Settings + Profile with tagline
+1. Push your code changes to a GitHub repository.
+2. Import the project on [Vercel](https://vercel.com).
+3. Add the env variables specified in `.env.local` to the Vercel **Environment Variables** settings.
+4. Click **Deploy**. Vercel will build and serve your Next.js application globally.
