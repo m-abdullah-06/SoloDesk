@@ -4,10 +4,10 @@ import { createClient } from "@/lib/supabase/client";
 import { AIScenario, AITone, AILanguage, AIMessage, Client, Project } from "@/types";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/Button";
-import { Select, Textarea } from "@/components/ui/Input";
+import { Input, Select, Textarea } from "@/components/ui/Input";
 import { Card } from "@/components/ui/Card";
 import { getScenarioLabel, formatRelative } from "@/lib/utils";
-import { Sparkles, Copy, Check, RefreshCw, History, Send, ChevronDown, ChevronUp } from "lucide-react";
+import { Sparkles, Copy, Check, RefreshCw, History, Send, ChevronDown, ChevronUp, Mail } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 
 const SCENARIOS: { value: AIScenario; label: string; hint: string }[] = [
@@ -38,10 +38,11 @@ const LANG_OPTIONS = [
 
 export default function AIPage() {
   const searchParams = useSearchParams();
-  const [clients, setClients] = useState<Pick<Client, 'id' | 'name'>[]>([]);
+  const [clients, setClients] = useState<Pick<Client, 'id' | 'name' | 'email'>[]>([]);
   const [projects, setProjects] = useState<Pick<Project, 'id' | 'name'>[]>([]);
   const [history, setHistory] = useState<AIMessage[]>([]);
   const [showHistory, setShowHistory] = useState(false);
+  const [clientEmail, setClientEmail] = useState("");
 
   const [scenario, setScenario] = useState<AIScenario>("late_payment");
   const [tone, setTone] = useState<AITone>("professional");
@@ -62,13 +63,21 @@ export default function AIPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       const [{ data: c }, { data: p }, { data: h }] = await Promise.all([
-        supabase.from("clients").select("id, name").eq("user_id", user.id).order("name"),
+        supabase.from("clients").select("id, name, email").eq("user_id", user.id).order("name"),
         supabase.from("projects").select("id, name").eq("user_id", user.id).eq("status", "active"),
         supabase.from("ai_messages").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(20),
       ]);
       setClients(c || []);
       setProjects(p || []);
       setHistory(h || []);
+
+      const paramClientId = searchParams.get("client_id") || "";
+      if (paramClientId && c) {
+        const found = c.find((client: any) => client.id === paramClientId);
+        if (found?.email) {
+          setClientEmail(found.email);
+        }
+      }
     }
     load();
   }, []);
@@ -161,7 +170,7 @@ export default function AIPage() {
       </div>
 
       {/* Options Row */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <Select
           label="Tone"
           value={tone}
@@ -177,9 +186,19 @@ export default function AIPage() {
         <Select
           label="Client (optional)"
           value={clientId}
-          onChange={setClientId}
+          onChange={(val) => {
+            setClientId(val);
+            const cl = clients.find((c) => c.id === val);
+            setClientEmail(cl?.email || "");
+          }}
           options={clients.map((c) => ({ value: c.id, label: c.name }))}
           placeholder="Select client"
+        />
+        <Input
+          label="Client Email"
+          placeholder="client@example.com"
+          value={clientEmail}
+          onChange={(e) => setClientEmail(e.target.value)}
         />
         <Select
           label="Project (optional)"
@@ -212,6 +231,17 @@ export default function AIPage() {
           <div className="flex items-center justify-between mb-3">
             <h3 className="font-semibold text-text-primary text-sm">Generated Message</h3>
             <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const mailtoUrl = `mailto:${clientEmail}?subject=${encodeURIComponent(result.subject || '')}&body=${encodeURIComponent(result.body)}`;
+                  window.location.href = mailtoUrl;
+                }}
+                className="text-orange-500 hover:text-orange-600 border-orange-500/20 hover:border-orange-500/30"
+              >
+                <Mail size={14} /> Send Email
+              </Button>
               <Button variant="ghost" size="sm" onClick={generate} disabled={loading}>
                 <RefreshCw size={14} /> Regenerate
               </Button>

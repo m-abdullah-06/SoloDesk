@@ -245,3 +245,56 @@ BEGIN
   RETURN 'INV-' || LPAD(count::TEXT, 4, '0');
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- =====================
+-- PROJECT DELIVERABLES
+-- =====================
+CREATE TABLE public.project_deliverables (
+  id           UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  project_id   UUID REFERENCES public.projects(id) ON DELETE CASCADE NOT NULL,
+  user_id      UUID REFERENCES public.users(id) ON DELETE CASCADE NOT NULL,
+  title        TEXT NOT NULL,
+  description  TEXT,
+  file_url     TEXT,
+  file_name    TEXT,
+  file_size    BIGINT,
+  file_type    TEXT,
+  is_external  BOOLEAN DEFAULT FALSE,
+  created_at   TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.project_deliverables ENABLE ROW LEVEL SECURITY;
+
+-- Freelancer can manage their own deliverables
+CREATE POLICY "Users manage deliverables" ON public.project_deliverables
+  USING (auth.uid() = user_id);
+
+-- Client portal can read deliverables for enabled projects
+CREATE POLICY "Portal can read deliverables" ON public.project_deliverables FOR SELECT
+  USING (EXISTS (
+    SELECT 1 FROM public.projects p
+    WHERE p.id = project_id AND p.portal_enabled = TRUE
+  ));
+
+-- =====================
+-- STORAGE: deliverables bucket
+-- Run this in Supabase Dashboard > Storage > New Bucket
+-- Name: deliverables
+-- Public: true (so clients can download without auth)
+-- =====================
+-- INSERT INTO storage.buckets (id, name, public) VALUES ('deliverables', 'deliverables', true);
+
+-- Storage RLS: only authenticated users can upload
+-- CREATE POLICY "Authenticated users upload deliverables" ON storage.objects FOR INSERT
+--   TO authenticated WITH CHECK (bucket_id = 'deliverables');
+-- CREATE POLICY "Anyone can download deliverables" ON storage.objects FOR SELECT
+--   USING (bucket_id = 'deliverables');
+
+-- =====================
+-- TWO-WAY MESSAGING UPDATE
+-- =====================
+-- ALTER TABLE public.client_messages ADD COLUMN IF NOT EXISTS sender TEXT DEFAULT 'client' CHECK (sender IN ('client', 'freelancer'));
+-- ALTER TABLE public.client_messages ALTER COLUMN client_name DROP NOT NULL;
+-- ALTER TABLE public.client_messages ALTER COLUMN client_email DROP NOT NULL;
+
+

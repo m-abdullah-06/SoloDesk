@@ -19,11 +19,11 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 
 const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/clients", icon: Users, label: "Clients" },
-  { href: "/projects", icon: FolderKanban, label: "Projects" },
-  { href: "/ai", icon: Sparkles, label: "AI Messages" },
-  { href: "/invoices", icon: Receipt, label: "Invoices" },
-  { href: "/proposals", icon: FileText, label: "Proposals" },
+  { href: "/clients",   icon: Users,           label: "Clients" },
+  { href: "/projects",  icon: FolderKanban,    label: "Projects" },
+  { href: "/ai",        icon: Sparkles,         label: "AI Messages" },
+  { href: "/invoices",  icon: Receipt,          label: "Invoices" },
+  { href: "/proposals", icon: FileText,         label: "Proposals" },
 ];
 
 export function Sidebar() {
@@ -37,14 +37,23 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="hidden md:flex flex-col w-60 h-screen bg-background border-r border-border fixed left-0 top-0 z-30">
+    <aside className="hidden md:flex flex-col w-60 h-screen fixed left-0 top-0 z-30 sidebar-shell">
       {/* Logo */}
-      <div className="px-5 py-5 border-b border-border">
-        <Link href="/dashboard" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-xl bg-accent flex items-center justify-center">
-            <span className="text-white font-bold text-sm">S</span>
+      <div
+        className="px-5 py-5"
+        style={{ borderBottom: "1px solid var(--sidebar-border)" }}
+      >
+        <Link href="/dashboard" className="flex items-center gap-2.5 group">
+          <div
+            className="w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-200 group-hover:scale-105"
+            style={{
+              background: "linear-gradient(135deg, #F5790A 0%, #e86d07 100%)",
+              boxShadow: "0 0 16px rgba(245,121,10,0.4)",
+            }}
+          >
+            <span className="text-white font-black text-sm">S</span>
           </div>
-          <span className="font-display font-bold text-foreground text-lg">
+          <span className="font-display font-bold text-foreground text-lg tracking-tight">
             SoloDesk
           </span>
         </Link>
@@ -61,16 +70,36 @@ export function Sidebar() {
               key={href}
               href={href}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group",
+                "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group relative",
                 active
-                  ? "bg-accent/10 text-accent"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                  ? "text-accent"
+                  : "text-muted-foreground hover:text-foreground",
               )}
+              style={
+                active
+                  ? { background: "var(--nav-active-bg)" }
+                  : undefined
+              }
+              onMouseEnter={(e) => {
+                if (!active)
+                  (e.currentTarget as HTMLElement).style.background =
+                    "var(--nav-hover-bg)";
+              }}
+              onMouseLeave={(e) => {
+                if (!active)
+                  (e.currentTarget as HTMLElement).style.background = "";
+              }}
             >
-              <Icon size={18} strokeWidth={active ? 2.5 : 1.8} />
+              {active && (
+                <span
+                  className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-full"
+                  style={{ background: "#F5790A" }}
+                />
+              )}
+              <Icon size={17} strokeWidth={active ? 2.5 : 1.8} />
               <span>{label}</span>
               {active && (
-                <ChevronRight size={14} className="ml-auto opacity-50" />
+                <ChevronRight size={12} className="ml-auto opacity-40" />
               )}
             </Link>
           );
@@ -78,22 +107,37 @@ export function Sidebar() {
       </nav>
 
       {/* Bottom */}
-      <div className="px-3 py-4 border-t border-border space-y-0.5">
-        <div className="flex items-center justify-between px-1 mb-2">
+      <div
+        className="px-3 py-4 space-y-0.5"
+        style={{ borderTop: "1px solid var(--sidebar-border)" }}
+      >
+        {/* Theme toggle row */}
+        <div className="flex items-center gap-2 px-2 mb-2">
           <ThemeToggle />
+          <span className="text-xs text-muted-foreground">Toggle theme</span>
         </div>
+
         <Link
           href="/settings"
-          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-all duration-150"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground transition-all duration-150"
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLElement).style.background =
+              "var(--nav-hover-bg)";
+            (e.currentTarget as HTMLElement).style.color = "var(--foreground)";
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLElement).style.background = "";
+            (e.currentTarget as HTMLElement).style.color = "";
+          }}
         >
-          <Settings size={18} strokeWidth={1.8} />
+          <Settings size={17} strokeWidth={1.8} />
           Settings
         </Link>
         <button
           onClick={handleSignOut}
-          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-red-50 dark:hover:bg-red-950 hover:text-destructive transition-all duration-150"
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-red-500/10 hover:text-red-400 transition-all duration-150"
         >
-          <LogOut size={18} strokeWidth={1.8} />
+          <LogOut size={17} strokeWidth={1.8} />
           Sign Out
         </button>
       </div>

@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { Project, Milestone, ProjectUpdate, ClientMessage } from "@/types";
+import { Project, Milestone, ProjectUpdate, ClientMessage, Deliverable } from "@/types";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -10,6 +10,7 @@ import { Input, Textarea } from "@/components/ui/Input";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { ProjectForm } from "@/components/projects/ProjectForm";
 import { MilestoneList } from "@/components/projects/MilestoneList";
+import { DeliverablesSection } from "@/components/projects/DeliverablesSection";
 import { formatDate, formatCurrency, getMilestoneProgress } from "@/lib/utils";
 import { useRouter, useParams } from "next/navigation";
 import {
@@ -33,17 +34,21 @@ export default function ProjectDetailPage() {
   const [copied, setCopied] = useState(false);
   const [invoices, setInvoices] = useState<any[]>([]);
   const [proposals, setProposals] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState<"milestones" | "updates" | "messages" | "invoices" | "proposals">("milestones");
+  const [deliverables, setDeliverables] = useState<Deliverable[]>([]);
+  const [activeTab, setActiveTab] = useState<"milestones" | "updates" | "messages" | "invoices" | "proposals" | "deliverables">("milestones");
+  const [replyText, setReplyText] = useState("");
+  const [replying, setReplying] = useState(false);
   const supabase = createClient();
 
   async function load() {
-    const [{ data: p }, { data: m }, { data: u }, { data: msg }, { data: inv }, { data: prop }] = await Promise.all([
+    const [{ data: p }, { data: m }, { data: u }, { data: msg }, { data: inv }, { data: prop }, { data: deliv }] = await Promise.all([
       supabase.from("projects").select("*, client:clients(name, email, whatsapp)").eq("id", id).single(),
       supabase.from("milestones").select("*").eq("project_id", id).order("sort_order"),
       supabase.from("project_updates").select("*").eq("project_id", id).order("created_at", { ascending: false }),
-      supabase.from("client_messages").select("*").eq("project_id", id).order("created_at", { ascending: false }),
+      supabase.from("client_messages").select("*").eq("project_id", id).order("created_at", { ascending: true }),
       supabase.from("invoices").select("*").eq("project_id", id).order("created_at", { ascending: false }),
       supabase.from("proposals").select("*").eq("client_id", (project as any)?.client_id || "").order("created_at", { ascending: false }),
+      supabase.from("project_deliverables").select("*").eq("project_id", id).order("created_at", { ascending: false }),
     ]);
     setProject(p);
     setMilestones(m || []);
@@ -51,6 +56,7 @@ export default function ProjectDetailPage() {
     setMessages(msg || []);
     setInvoices(inv || []);
     setProposals(prop || []);
+    setDeliverables(deliv || []);
     setLoading(false);
     // Mark messages as read
     if (msg?.some((m) => !m.read)) {
@@ -68,6 +74,26 @@ export default function ProjectDetailPage() {
     setShowUpdate(false);
     setPosting(false);
     load();
+  }
+
+  async function sendReply() {
+    if (!replyText.trim()) return;
+    setReplying(true);
+    try {
+      await supabase.from("client_messages").insert({
+        project_id: id,
+        message: replyText,
+        sender: "freelancer",
+        client_name: null,
+        client_email: null,
+      });
+      setReplyText("");
+      load();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setReplying(false);
+    }
   }
 
   async function togglePortal() {
@@ -175,7 +201,7 @@ export default function ProjectDetailPage() {
 
       {/* Tabs */}
       <div className="flex gap-1 border-b border-border overflow-x-auto">
-        {(["milestones", "updates", "messages", "invoices", "proposals"] as const).map((tab) => (
+        {(["milestones", "updates", "deliverables", "messages", "invoices", "proposals"] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -189,6 +215,11 @@ export default function ProjectDetailPage() {
             {tab === "messages" && messages.filter((m) => !m.read).length > 0 && (
               <span className="ml-1.5 bg-accent text-white text-xs px-1.5 py-0.5 rounded-full">
                 {messages.filter((m) => !m.read).length}
+              </span>
+            )}
+            {tab === "deliverables" && deliverables.length > 0 && (
+              <span className="ml-1.5 bg-green-500 text-white text-xs px-1.5 py-0.5 rounded-full font-bold">
+                {deliverables.length}
               </span>
             )}
           </button>
@@ -279,28 +310,89 @@ export default function ProjectDetailPage() {
       )}
 
       {activeTab === "messages" && (
-        <div className="space-y-3">
-          {messages.length === 0 ? (
-            <Card className="text-center py-8">
-              <MessageSquare size={24} className="text-text-muted mx-auto mb-2" />
-              <p className="text-sm text-text-muted">No client messages yet.</p>
-              <p className="text-xs text-text-muted mt-1">Share the portal link so clients can reply.</p>
-            </Card>
-          ) : (
-            messages.map((msg) => (
-              <Card key={msg.id} className={!msg.read ? "border-accent/30 bg-accent-light/30" : ""}>
-                <div className="flex items-start justify-between gap-2 mb-1.5">
-                  <div>
-                    <p className="text-sm font-medium text-text-primary">{msg.client_name}</p>
-                    <p className="text-xs text-text-muted">{msg.client_email}</p>
-                  </div>
-                  <p className="text-xs text-text-muted flex-shrink-0">{formatDate(msg.created_at)}</p>
+        <div className="space-y-4">
+          <Card className="flex flex-col h-[450px] !p-0 overflow-hidden border border-border bg-card">
+            {/* Chat header */}
+            <div className="flex items-center justify-between px-5 py-3.5 border-b border-border bg-muted/10">
+              <div>
+                <h4 className="text-sm font-semibold text-text-primary">Conversation History</h4>
+                <p className="text-[11px] text-text-muted">Direct messaging with client</p>
+              </div>
+            </div>
+
+            {/* Chat messages area */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0">
+              {messages.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-full text-center p-6">
+                  <MessageSquare size={32} className="text-text-muted/30 mb-2" />
+                  <p className="text-sm font-medium text-text-secondary">No messages yet</p>
+                  <p className="text-xs text-text-muted mt-0.5 max-w-[280px]">
+                    Share the portal link with your client. When they reply, the messages will appear here.
+                  </p>
                 </div>
-                <p className="text-sm text-text-secondary">{msg.message}</p>
-              </Card>
-            ))
-          )}
+              ) : (
+                messages.map((msg) => {
+                  const isClient = msg.sender !== "freelancer";
+                  return (
+                    <div
+                      key={msg.id}
+                      className={`flex flex-col max-w-[80%] ${
+                        isClient ? "mr-auto items-start" : "ml-auto items-end"
+                      }`}
+                    >
+                      {isClient && (msg.client_name || msg.client_email) && (
+                        <span className="text-[10px] text-text-muted mb-0.5 px-2">
+                          {msg.client_name || msg.client_email}
+                        </span>
+                      )}
+                      <div
+                        className={`rounded-2xl px-4 py-2 text-sm leading-relaxed ${
+                          isClient
+                            ? "bg-bg-elevated text-text-primary rounded-tl-none border border-border"
+                            : "bg-accent text-white rounded-tr-none"
+                        }`}
+                      >
+                        {msg.message}
+                      </div>
+                      <span className="text-[9px] text-text-muted mt-1 px-2">
+                        {formatDate(msg.created_at)}
+                      </span>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            {/* Chat input box */}
+            <div className="p-3 border-t border-border bg-muted/5 flex gap-2">
+              <input
+                type="text"
+                placeholder="Type your reply..."
+                value={replyText}
+                onChange={(e) => setReplyText(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    sendReply();
+                  }
+                }}
+                className="flex-1 min-w-0 bg-bg-elevated border border-border rounded-xl px-4 py-2 text-sm text-text-primary focus:outline-none focus:border-accent"
+              />
+              <Button onClick={sendReply} loading={replying} disabled={!replyText.trim()} className="px-4 flex-shrink-0">
+                <Send size={14} /> Send
+              </Button>
+            </div>
+          </Card>
         </div>
+      )}
+
+      {activeTab === "deliverables" && (
+        <DeliverablesSection
+          projectId={id}
+          userId={project.user_id}
+          deliverables={deliverables}
+          onRefresh={load}
+        />
       )}
 
       <Modal open={showEdit} onClose={() => setShowEdit(false)} title="Edit Project">

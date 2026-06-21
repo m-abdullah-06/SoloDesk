@@ -82,9 +82,10 @@ export type ProjectUpdate = {
 export type ClientMessage = {
   id: string;
   project_id: string;
-  client_name: string;
-  client_email: string;
+  client_name: string | null;
+  client_email: string | null;
   message: string;
+  sender?: "client" | "freelancer";
   read: boolean;
   created_at: string;
 };
@@ -196,3 +197,18 @@ export type DashboardStats = {
   unread_messages: number;
   currency: "PKR" | "USD" | "GBP";
 };
+
+export type Deliverable = {
+  id: string;
+  project_id: string;
+  user_id: string;
+  title: string;
+  description: string | null;
+  file_url: string | null;
+  file_name: string | null;
+  file_size: number | null;
+  file_type: string | null;
+  is_external: boolean;
+  created_at: string;
+};
+
