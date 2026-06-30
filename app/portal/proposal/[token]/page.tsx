@@ -106,7 +106,7 @@ export default function PublicProposalPage() {
                 </h2>
                 <div className="grid gap-4">
                   {proposal.scope_items.map((item: any, i: number) => (
-                    <div key={i} className="flex gap-4 p-4 bg-white border border-border rounded-2xl shadow-sm">
+                    <div key={i} className="flex gap-4 p-4 bg-bg-elevated border border-border rounded-2xl shadow-sm">
                       <div className="w-6 h-6 rounded-full bg-accent-light flex items-center justify-center flex-shrink-0 mt-0.5">
                         <Check size={14} className="text-accent" />
                       </div>

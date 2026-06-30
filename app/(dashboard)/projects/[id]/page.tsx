@@ -41,15 +41,27 @@ export default function ProjectDetailPage() {
   const supabase = createClient();
 
   async function load() {
-    const [{ data: p }, { data: m }, { data: u }, { data: msg }, { data: inv }, { data: prop }, { data: deliv }] = await Promise.all([
-      supabase.from("projects").select("*, client:clients(name, email, whatsapp)").eq("id", id).single(),
+    const { data: p } = await supabase
+      .from("projects")
+      .select("*, client:clients(name, email, whatsapp)")
+      .eq("id", id)
+      .single();
+
+    if (!p) {
+      setProject(null);
+      setLoading(false);
+      return;
+    }
+
+    const [{ data: m }, { data: u }, { data: msg }, { data: inv }, { data: prop }, { data: deliv }] = await Promise.all([
       supabase.from("milestones").select("*").eq("project_id", id).order("sort_order"),
       supabase.from("project_updates").select("*").eq("project_id", id).order("created_at", { ascending: false }),
       supabase.from("client_messages").select("*").eq("project_id", id).order("created_at", { ascending: true }),
       supabase.from("invoices").select("*").eq("project_id", id).order("created_at", { ascending: false }),
-      supabase.from("proposals").select("*").eq("client_id", (project as any)?.client_id || "").order("created_at", { ascending: false }),
+      supabase.from("proposals").select("*").eq("client_id", p.client_id || "").order("created_at", { ascending: false }),
       supabase.from("project_deliverables").select("*").eq("project_id", id).order("created_at", { ascending: false }),
     ]);
+
     setProject(p);
     setMilestones(m || []);
     setUpdates(u || []);

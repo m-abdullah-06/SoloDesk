@@ -47,6 +47,8 @@ const config: Config = {
         input:   "var(--input)",
         ring:    "var(--ring)",
         /* custom semantic colours */
+        "bg-base":       "var(--background)",
+        "bg-elevated":   "var(--bg-elevated)",
         "accent-light":  "var(--accent-light)",
         "text-primary":  "var(--text-primary)",
         "text-muted":    "var(--text-muted)",
