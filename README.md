@@ -19,7 +19,7 @@ SoloDesk was built end-to-end during the AI Seekho 2026 hackathon and placed in 
 📎 [View the announcement on LinkedIn](https://www.linkedin.com/posts/muhammad-abdullah-09390938a_vibekaregapakistan-aiseekho2026-vibekaregapakistan-share-7475597933388804096-_FrK/)
 
 <p align="center">
-  <img src="./assets/ai-seekho-swag.jfif" alt="AI Seekho 2026 Swag Kit" width="500" />
+  <img src="./asset/ai-seekho-swag.jfif" alt="AI Seekho 2026 Swag Kit" width="500" />
 </p>
 
 ---
