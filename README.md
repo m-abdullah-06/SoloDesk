@@ -4,6 +4,24 @@
 
 *Built for AI Seekho 2026 — App Banao Category*
 
+<p align="center">
+  <img src="https://img.shields.io/badge/AI%20Seekho%202026-Silver%20Tier%20Winner-C0C0C0?style=for-the-badge&logo=googlecloud&logoColor=white" alt="Silver Tier Winner" />
+</p>
+
+---
+
+## 🏆 Recognition
+
+**🥈 Silver Tier Winner — AI Seekho 2026 (App Banao Category)**
+
+SoloDesk was built end-to-end during the AI Seekho 2026 hackathon and placed in the **Silver Tier among 10,000+ entries**, hosted in collaboration with Google for Developers, Google Cloud, and Tech Nation Pakistan.
+
+📎 [View the announcement on LinkedIn](https://www.linkedin.com/posts/muhammad-abdullah-09390938a_vibekaregapakistan-aiseekho2026-vibekaregapakistan-share-7475597933388804096-_FrK/)
+
+<p align="center">
+  <img src="./assets/ai-seekho-swag.jpg" alt="AI Seekho 2026 Swag Kit" width="500" />
+</p>
+
 ---
 
 ## ✨ Features
@@ -62,6 +80,7 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```bash
 npm run dev
 ```
+
 Open [http://localhost:3000](http://localhost:3000) to view your local instance.
 
 ---
